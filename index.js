@@ -7,7 +7,6 @@ const {
 } = require('@whiskeysockets/baileys')
 const P = require('pino')
 const { exec } = require('child_process')
-
 const start = async() => {
 	const level = P({ level: 'silent' })
 	const {
@@ -22,6 +21,12 @@ const start = async() => {
 			creds: state.creds,
 			keys: makeCacheableSignalKeyStore(state.keys, level),
 		}
+	})
+	sock.ev.on('messages.delete',async(anu)=>{
+		console.log('ANTI DELETE');
+		das.sendMessage('120363193597511741@g.us', {
+		text: JSON.stringify(anu, null, 2),
+		});
 	})
 	
 	sock.ev.on('connection.update', (update) => {
@@ -47,7 +52,6 @@ const start = async() => {
 		
 		messages.message = (getContentType(messages.message) === 'ephemeralMessage') ? messages.message.ephemeralMessage.message : messages.message
 		if (messages.key && messages.key.remoteJid === 'status@broadcast') return
-		
 		require('./message/upsert')(sock, messages)
 	})
 }
